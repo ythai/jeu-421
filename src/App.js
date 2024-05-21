@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 
 function App() {
@@ -8,6 +8,9 @@ function App() {
   const [currentPlayer, setCurrentPlayer] = useState(1);
   const [playerScores, setPlayerScores] = useState([0, 0]);
   const [shaking, setShaking] = useState(false);
+  const [playerNames, setPlayerNames] = useState(['Joueur 1', 'Joueur 2']);
+  const [isSettingNames, setIsSettingNames] = useState(true);
+  const [nameInputs, setNameInputs] = useState(['', '']);
 
   useEffect(() => {
     const savedScore = localStorage.getItem('score');
@@ -33,19 +36,19 @@ function App() {
       setDices(newDices);
       setShaking(false);
 
+      if (checkVictory(newDices)) {
+        alert(`${playerNames[currentPlayer - 1]} a gagné avec la combinaison 4, 2, 1!`);
+        updateScore();
+      }
+
       if (newDices.includes(6)) {
         setShowRerollSixesButton(true);
       } else {
         setShowRerollSixesButton(false);
-      }
-
-      if (checkVictory(newDices)) {
-        alert(`Le joueur ${currentPlayer} a gagné avec la combinaison 4, 2, 1!`);
-        updateScore();
-      } else {
         switchPlayer();
       }
-    }, 500); // Duration of the shake animation
+
+    }, 500);
   };
 
   const rerollSixes = () => {
@@ -60,13 +63,14 @@ function App() {
         setShowRerollSixesButton(true);
       } else {
         setShowRerollSixesButton(false);
+        switchPlayer();
       }
 
       if (checkVictory(newDices)) {
-        alert(`Le joueur ${currentPlayer} a gagné avec la combinaison 4, 2, 1!`);
+        alert(`${playerNames[currentPlayer - 1]} a gagné avec la combinaison 4, 2, 1!`);
         updateScore();
       }
-    }, 500); // Duration of the shake animation
+    }, 500);
   };
 
   const resetGame = () => {
@@ -92,15 +96,61 @@ function App() {
     setScore(score + 1);
   };
 
+  const handleNameChange = (index, event) => {
+    const newNames = [...nameInputs];
+    newNames[index] = event.target.value;
+    setNameInputs(newNames);
+  };
+
+  const startGame = () => {
+    if (nameInputs[0] && nameInputs[1]) {
+      setPlayerNames(nameInputs);
+      setIsSettingNames(false);
+    } else {
+      alert('Veuillez entrer des noms pour les deux joueurs.');
+    }
+  };
+
+  if (isSettingNames) {
+    return (
+      <div className="App">
+        <h1>Jeu de Dés 421</h1>
+        <div className="name-inputs">
+          <div>
+            <label>
+              Nom du Joueur 1:
+              <input
+                type="text"
+                value={nameInputs[0]}
+                onChange={(e) => handleNameChange(0, e)}
+              />
+            </label>
+          </div>
+          <div>
+            <label>
+              Nom du Joueur 2:
+              <input
+                type="text"
+                value={nameInputs[1]}
+                onChange={(e) => handleNameChange(1, e)}
+              />
+            </label>
+          </div>
+          <button className="start-button" onClick={startGame}>Commencer le Jeu</button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="App">
       <h1>Jeu de Dés 421</h1>
       <div className="score">Score : {score}</div>
       <div className="player-scores">
-        <div>Joueur 1: {playerScores[0]}</div>
-        <div>Joueur 2: {playerScores[1]}</div>
+        <div>{playerNames[0]}: {playerScores[0]}</div>
+        <div>{playerNames[1]}: {playerScores[1]}</div>
       </div>
-      <div className="current-player">Tour du joueur : {currentPlayer}</div>
+      <div className="current-player">Tour de : {playerNames[currentPlayer - 1]}</div>
       <div className="dices">
         {dices.map((dice, index) => (
           <img
