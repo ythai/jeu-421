@@ -5,6 +5,8 @@ function App() {
   const [dices, setDices] = useState([1, 1, 1]);
   const [showRerollSixesButton, setShowRerollSixesButton] = useState(false);
   const [score, setScore] = useState(0);
+  const [currentPlayer, setCurrentPlayer] = useState(1);
+  const [playerScores, setPlayerScores] = useState([0, 0]);
 
   useEffect(() => {
     const savedScore = localStorage.getItem('score');
@@ -17,11 +19,6 @@ function App() {
     localStorage.setItem('score', score);
   }, [score]);
 
-  const checkVictory = (dices) => {
-    const sortedDices = [...dices].sort();
-    return JSON.stringify(sortedDices) === JSON.stringify([1, 2, 4]);
-  };
-
   const rollDices = () => {
     const newDices = dices.map(() => Math.floor(Math.random() * 6) + 1);
     setDices(newDices);
@@ -33,8 +30,10 @@ function App() {
     }
 
     if (checkVictory(newDices)) {
-      alert('Vous avez gagné avec la combinaison 4, 2, 1!');
-      setScore(score + 1);
+      alert(`Le joueur ${currentPlayer} a gagné avec la combinaison 4, 2, 1!`);
+      updateScore();
+    } else {
+      switchPlayer();
     }
   };
 
@@ -49,8 +48,8 @@ function App() {
     }
 
     if (checkVictory(newDices)) {
-      alert('Vous avez gagné avec la combinaison 4, 2, 1!');
-      setScore(score + 1);
+      alert(`Le joueur ${currentPlayer} a gagné avec la combinaison 4, 2, 1!`);
+      updateScore();
     }
   };
 
@@ -59,13 +58,36 @@ function App() {
     setShowRerollSixesButton(false);
   };
 
+  const checkVictory = (dices) => {
+    const sortedDices = [...dices].sort();
+    return JSON.stringify(sortedDices) === JSON.stringify([1, 2, 4]);
+  };
+
+  const switchPlayer = () => {
+    setCurrentPlayer((prevPlayer) => (prevPlayer === 1 ? 2 : 1));
+  };
+
+  const updateScore = () => {
+    setPlayerScores((prevScores) => {
+      const newScores = [...prevScores];
+      newScores[currentPlayer - 1] += 1;
+      return newScores;
+    });
+    setScore(score + 1);
+  };
+
   return (
     <div className="App">
       <h1>Jeu de Dés 421</h1>
       <div className="score">Score : {score}</div>
+      <div className="player-scores">
+        <div>Joueur 1: {playerScores[0]}</div>
+        <div>Joueur 2: {playerScores[1]}</div>
+      </div>
+      <div className="current-player">Tour du joueur : {currentPlayer}</div>
       <div className="dices">
         {dices.map((dice, index) => (
-          <div key={index} className="dice">{dice}</div>
+          <img key={index} className="dice" src={`/images/d${dice}.png`} alt={`Dice ${dice}`} />
         ))}
       </div>
       <button className="roll-button" onClick={rollDices}>Lancer les Dés</button>
