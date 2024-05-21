@@ -30,7 +30,8 @@ h1 {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.roll-button {
+.roll-button,
+.reroll-sixes-button {
   background-color: #007bff;
   color: #fff;
   padding: 10px 20px;
@@ -39,8 +40,10 @@ h1 {
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin: 10px;
 }
 
-.roll-button:hover {
+.roll-button:hover,
+.reroll-sixes-button:hover {
   background-color: #0056b3;
 }
