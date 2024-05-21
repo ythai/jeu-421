@@ -28,7 +28,12 @@ function App() {
   const rerollSixes = () => {
     const newDices = dices.map(dice => (dice === 6 ? Math.floor(Math.random() * 6) + 1 : dice));
     setDices(newDices);
-    setShowRerollSixesButton(false);
+
+    if (newDices.includes(6)) {
+      setShowRerollSixesButton(true);
+    } else {
+      setShowRerollSixesButton(false);
+    }
 
     if (checkVictory(newDices)) {
       alert('Vous avez gagné avec la combinaison 4, 2, 1!');
