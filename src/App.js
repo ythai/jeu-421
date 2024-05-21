@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 
 function App() {
@@ -7,6 +7,7 @@ function App() {
   const [score, setScore] = useState(0);
   const [currentPlayer, setCurrentPlayer] = useState(1);
   const [playerScores, setPlayerScores] = useState([0, 0]);
+  const [shaking, setShaking] = useState(false);
 
   useEffect(() => {
     const savedScore = localStorage.getItem('score');
@@ -19,38 +20,53 @@ function App() {
     localStorage.setItem('score', score);
   }, [score]);
 
+  const playDiceRollSound = () => {
+    const audio = new Audio('/sounds/dice-roll.mp3');
+    audio.play();
+  };
+
   const rollDices = () => {
-    const newDices = dices.map(() => Math.floor(Math.random() * 6) + 1);
-    setDices(newDices);
+    setShaking(true);
+    playDiceRollSound();
+    setTimeout(() => {
+      const newDices = dices.map(() => Math.floor(Math.random() * 6) + 1);
+      setDices(newDices);
+      setShaking(false);
 
-    if (newDices.includes(6)) {
-      setShowRerollSixesButton(true);
-    } else {
-      setShowRerollSixesButton(false);
-    }
+      if (newDices.includes(6)) {
+        setShowRerollSixesButton(true);
+      } else {
+        setShowRerollSixesButton(false);
+      }
 
-    if (checkVictory(newDices)) {
-      alert(`Le joueur ${currentPlayer} a gagné avec la combinaison 4, 2, 1!`);
-      updateScore();
-    } else {
-      switchPlayer();
-    }
+      if (checkVictory(newDices)) {
+        alert(`Le joueur ${currentPlayer} a gagné avec la combinaison 4, 2, 1!`);
+        updateScore();
+      } else {
+        switchPlayer();
+      }
+    }, 500); // Duration of the shake animation
   };
 
   const rerollSixes = () => {
-    const newDices = dices.map(dice => (dice === 6 ? Math.floor(Math.random() * 6) + 1 : dice));
-    setDices(newDices);
+    setShaking(true);
+    playDiceRollSound();
+    setTimeout(() => {
+      const newDices = dices.map(dice => (dice === 6 ? Math.floor(Math.random() * 6) + 1 : dice));
+      setDices(newDices);
+      setShaking(false);
 
-    if (newDices.includes(6)) {
-      setShowRerollSixesButton(true);
-    } else {
-      setShowRerollSixesButton(false);
-    }
+      if (newDices.includes(6)) {
+        setShowRerollSixesButton(true);
+      } else {
+        setShowRerollSixesButton(false);
+      }
 
-    if (checkVictory(newDices)) {
-      alert(`Le joueur ${currentPlayer} a gagné avec la combinaison 4, 2, 1!`);
-      updateScore();
-    }
+      if (checkVictory(newDices)) {
+        alert(`Le joueur ${currentPlayer} a gagné avec la combinaison 4, 2, 1!`);
+        updateScore();
+      }
+    }, 500); // Duration of the shake animation
   };
 
   const resetGame = () => {
@@ -87,7 +103,12 @@ function App() {
       <div className="current-player">Tour du joueur : {currentPlayer}</div>
       <div className="dices">
         {dices.map((dice, index) => (
-          <img key={index} className="dice" src={`/images/d${dice}.png`} alt={`Dice ${dice}`} />
+          <img
+            key={index}
+            className={`dice ${shaking ? 'shake' : ''}`}
+            src={`/images/d${dice}.png`}
+            alt={`Dice ${dice}`}
+          />
         ))}
       </div>
       <button className="roll-button" onClick={rollDices}>Lancer les Dés</button>
