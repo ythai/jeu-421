@@ -10,6 +10,12 @@ h1 {
   margin-bottom: 20px;
 }
 
+.score {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
 .dices {
   display: flex;
   justify-content: center;
@@ -31,7 +37,8 @@ h1 {
 }
 
 .roll-button,
-.reroll-sixes-button {
+.reroll-sixes-button,
+.reset-button {
   background-color: #007bff;
   color: #fff;
   padding: 10px 20px;
@@ -44,6 +51,7 @@ h1 {
 }
 
 .roll-button:hover,
-.reroll-sixes-button:hover {
+.reroll-sixes-button:hover,
+.reset-button:hover {
   background-color: #0056b3;
 }
